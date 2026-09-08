@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mini SaaS
+
+Mini SaaS (the new domain + brand for this build) is a multi-surface Next.js 16 project for showcasing and selling high-performing micro SaaS automations:
+
+- **Marketing site** (`/(marketing)`) with hero, category grid, value props, and CTA panel.
+- **Marketplace browse + detail** (`/apps`, `/apps/corbin-email-guru`) using reusable `MarketplaceAppCard`.
+- **Creator surfaces** (`/dashboard`, `/onboarding`) for payouts, installs, and onboarding steps.
+- **Auth entry** (`/login`) with placeholder card.
+- **Flagship business app** relocated to `/apps/corbin-email-guru` (multi-tab experience for outreach automation).
+
+Built with **Next.js 16**, **TypeScript**, **Tailwind**, **shadcn/ui**, **framer-motion**, and freshly scaffolded Supabase + Stripe clients.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) for the marketing surface, or jump to:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `/apps` – marketplace browse grid
+- `/apps/corbin-email-guru` – flagship productivity app
+- `/dashboard` – creator console stub
+- `/onboarding` – onboarding wizard stub
+- `/login` – auth card
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+Create `.env.local` (or copy `.env.example`) with:
 
-To learn more about Next.js, take a look at the following resources:
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Supabase helpers live in `src/lib/supabase/{client,server}.ts`, and Stripe helper in `src/lib/stripe.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start Next.js (Turbopack) |
+| `npm run build` | Production build |
+| `npm run start` | Run the built app |
+| `npm run lint` | ESLint (flat config) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Structure Highlights
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/app/
+  (marketing)/page.tsx         # Landing page
+  (marketplace)/apps/page.tsx  # Marketplace browse
+  (marketplace)/apps/corbin-email-guru/page.tsx
+  (creator)/dashboard/page.tsx
+  (creator)/onboarding/page.tsx
+  (auth)/login/page.tsx
+```
+
+Shared UI lives in `src/components/sections`, `components/marketplace`, `components/creator`, `components/forms`, and `components/auth`.
+
+## Next Steps
+
+1. **Connect real data** – wire Supabase schema + actions for listings, creators, and installs.
+2. **Stripe Connect** – implement onboarding routes + webhooks (`/api/stripe/*`).
+3. **Auth** – add Clerk/Supabase Auth + middleware for dashboard routes.
+4. **Admin tooling** – approval queue, featured placement controls.
+5. **App manifests** – schema for creator submissions and deploy hooks.
+
+Use this foundation to build the full marketplace experience end-to-end.
