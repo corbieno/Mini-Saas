@@ -1,20 +1,34 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { getSupabasePublicEnv } from "@/lib/env";
 
-let cachedServerClient: SupabaseClient | null = null;
-
-export function getSupabaseServerClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Missing Supabase server env vars.");
+export async function createSupabaseServerClient() {
+  const env = getSupabasePublicEnv();
+  if (!env) {
+    return null;
   }
 
-  if (!cachedServerClient) {
-    cachedServerClient = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-  }
+  const cookieStore = await cookies();
 
-  return cachedServerClient;
+  return createServerClient(env.url, env.anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // Called from a Server Component. The proxy refreshes cookies instead.
+        }
+      },
+    },
+  });
+}
+
+/** @deprecated Use createSupabaseServerClient() for user-scoped requests. */
+export async function getSupabaseServerClient() {
+  return createSupabaseServerClient();
 }
