@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatMoney, formatShortDate, type Goal } from "@/lib/finance";
+import { formatDateWithYear, formatMoney, type Goal } from "@/lib/finance";
 import { ConfirmDialog } from "@/components/finance/confirm-dialog";
 import { useFinance } from "@/components/finance/finance-context";
 import { GoalDialog } from "@/components/finance/goal-dialog";
@@ -55,7 +55,7 @@ export default function GoalsPage() {
                 <CardContent className="flex h-full flex-col gap-4 pt-1">
                   <div>
                     <p className="text-lg font-medium">{goal.name}</p>
-                    <p className="text-sm text-slate-500">Target {formatShortDate(goal.targetDate)}</p>
+                    <p className="text-sm text-slate-500">Target {formatDateWithYear(goal.targetDate)}</p>
                   </div>
                   <div>
                     <p className="text-2xl font-semibold tabular-nums">{formatMoney(goal.currentAmount)}</p>

@@ -78,19 +78,19 @@ export default function FinanceOverviewPage() {
 
       {alerts.length > 0 ? (
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
-          <div className="mb-2 flex items-center gap-2 font-medium">
-            <AlertTriangle className="size-4" />
-            Over-budget categories
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 font-medium">
+            <span className="flex items-center gap-2">
+              <AlertTriangle className="size-4" />
+              Over-budget categories
+            </span>
+            <Button asChild variant="outline" size="sm" className="bg-white dark:bg-slate-900">
+              <Link href="/finance/budgets">Review budgets</Link>
+            </Button>
           </div>
           <ul className="space-y-1">
             {alerts.map((alert) => (
-              <li key={alert.id} className="flex flex-wrap items-center justify-between gap-2">
-                <span>
-                  {alert.category} is {formatMoney(alert.spent - alert.limit)} over a {formatMoney(alert.limit)} limit.
-                </span>
-                <Button asChild variant="outline" size="sm" className="bg-white dark:bg-slate-900">
-                  <Link href="/finance/budgets">Review budgets</Link>
-                </Button>
+              <li key={alert.id}>
+                {alert.category} is {formatMoney(alert.spent - alert.limit)} over a {formatMoney(alert.limit)} limit.
               </li>
             ))}
           </ul>

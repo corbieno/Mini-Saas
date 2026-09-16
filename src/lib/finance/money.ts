@@ -61,6 +61,16 @@ export function formatShortDate(isoDate: string) {
   );
 }
 
+export function formatDateWithYear(isoDate: string) {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  if (!year || !month || !day) {
+    return isoDate;
+  }
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(
+    new Date(year, month - 1, day),
+  );
+}
+
 export function isoDateFromParts(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
