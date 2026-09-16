@@ -25,13 +25,13 @@ const featuredApps = [
     tags: ["Gmail", "Outlook"],
   },
   {
-    title: "Finance Sitter",
-    description: "Daily cash intel + anomaly detection for small biz owners. Connects to Stripe, Mercury, QuickBooks.",
+    title: "Household Ledger",
+    description: "Personal money dashboard with net worth, budgets, and goals. Ships with realistic demo data — no bank login.",
     category: "Finance",
-    creator: "Northwind Studio",
-    price: "$49/mo",
-    href: "/apps/corbin-email-guru",
-    tags: ["Forecasting", "Alerts"],
+    creator: "Mini SaaS",
+    price: "Free demo",
+    href: "/finance",
+    tags: ["Budgets", "Net worth", "Local data"],
   },
 ];
 

@@ -4,11 +4,12 @@ Mini SaaS is a multi-surface Next.js 16 marketplace for showcasing and selling m
 
 - **Marketing site** (`/`) with hero, category grid, value props, and CTA panel.
 - **Marketplace browse + detail** (`/apps`, `/apps/[slug]`) backed by Supabase. The flagship workspace remains at `/apps/corbin-email-guru`.
+- **Household Ledger** (`/finance`) personal finance dashboard with demo household data (no bank connection or API keys).
 - **Creator surfaces** (`/dashboard`, `/onboarding`) for listings, payouts, installs, and Stripe Connect.
 - **Auth** (`/login`) with email + password and magic links via Supabase Auth.
 - **API** for apps, creator metrics, Connect onboarding, and Stripe webhooks.
 
-Built with **Next.js 16**, **TypeScript**, **Tailwind**, **shadcn/ui**, **framer-motion**, **Supabase**, and **Stripe Connect**.
+Built with **Next.js 16**, **TypeScript**, **Tailwind**, **shadcn/ui**, **framer-motion**, **recharts**, **Supabase**, and **Stripe Connect**.
 
 ## Getting Started
 
@@ -22,9 +23,44 @@ Visit [http://localhost:3000](http://localhost:3000) for the marketing surface, 
 
 - `/apps` – marketplace browse grid
 - `/apps/corbin-email-guru` – flagship productivity app
+- `/finance` – Household Ledger personal finance dashboard (demo data, no keys)
 - `/dashboard` – creator console (signed-in)
 - `/onboarding` – Stripe Connect onboarding (signed-in)
 - `/login` – sign in / sign up
+
+## Household Ledger
+
+Ledger is a client-side money dashboard at [`/finance`](http://localhost:3000/finance). It is a first-class Mini SaaS workspace, not a separate app stack: same Next.js App Router, Tailwind, and shadcn/ui.
+
+**Included today**
+
+- Overview: net worth, cash vs investments vs debt, income vs spending chart, over-budget alerts, category donut
+- Accounts, transactions, budgets, and savings goals with add / edit / delete
+- Searchable transaction table with category and month filters
+- Realistic US household seed data (several accounts, ~50 transactions across the last 2–3 months)
+- Persistence in `localStorage` (`mini-saas.finance.v1`) so it works with **zero API keys**
+- Optional dark mode (Ledger only) and a reset-demo-data action
+
+**How to run**
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000/finance](http://localhost:3000/finance). Ledger does not need `.env.local`, Supabase, or Stripe. The marketing site, marketplace, and creator console still use the env vars below.
+
+**Data layer**
+
+UI code talks to a `FinanceRepository` (`src/lib/finance/repository.ts`) plus a React provider. The v1 adapter is localStorage + `src/lib/finance/seed.ts`. A future Supabase adapter can implement the same `load` / `save` contract (or row-level CRUD on the provider) without rewriting pages.
+
+**Next steps (not in this demo)**
+
+- Bank sync via Plaid (or similar) instead of manual transactions
+- Supabase Auth + tables for accounts, transactions, budgets, and goals
+- Deploy the existing Next.js app on Vercel (`npm run build` already covers `/finance`)
+
+Do not commit secrets. Ledger never requires them.
 
 ## Environment Variables
 
@@ -128,6 +164,7 @@ src/app/
   (marketplace)/apps/page.tsx      # Marketplace browse
   (marketplace)/apps/[slug]/page.tsx
   (marketplace)/apps/corbin-email-guru/page.tsx
+  (finance)/finance/               # Household Ledger workspace
   (creator)/dashboard/page.tsx
   (creator)/onboarding/page.tsx
   (auth)/login/page.tsx
@@ -136,6 +173,8 @@ src/app/
   api/creator/onboarding/route.ts
   api/creator/metrics/route.ts
   api/stripe/webhook/route.ts
+src/lib/finance/                   # Ledger types, seed data, local repository
+src/components/finance/            # Ledger UI + provider
 src/proxy.ts                       # Session refresh + protected creator routes
 supabase/schema.sql
 supabase/seed.sql

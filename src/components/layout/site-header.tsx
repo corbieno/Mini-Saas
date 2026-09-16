@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-const HIDDEN_PREFIXES = ["/apps/corbin-email-guru"];
+const HIDDEN_PREFIXES = ["/apps/corbin-email-guru", "/finance"];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -43,6 +43,9 @@ export function SiteHeader() {
         <nav className="flex items-center gap-1 text-sm">
           <Button variant="ghost" asChild>
             <Link href="/apps">Apps</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/finance">Ledger</Link>
           </Button>
           <Button variant="ghost" asChild>
             <Link href="/dashboard">Dashboard</Link>

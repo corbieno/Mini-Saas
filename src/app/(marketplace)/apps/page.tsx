@@ -7,6 +7,18 @@ import { Input } from "@/components/ui/input";
 import { formatAppPrice } from "@/lib/format";
 import { MARKETPLACE_FILTERS } from "@/lib/types";
 
+const WORKSPACE_DEMOS = [
+  {
+    title: "Household Ledger",
+    description: "Personal finance dashboard with accounts, transactions, budgets, and goals. Demo data lives in your browser.",
+    category: "Finance",
+    creator: "Mini SaaS",
+    price: "Free demo",
+    href: "/finance",
+    tags: ["Budgets", "Net worth", "Local data"],
+  },
+];
+
 export const dynamic = "force-dynamic";
 
 export default async function MarketplaceAppsPage({
@@ -18,6 +30,11 @@ export default async function MarketplaceAppsPage({
   const category = params.category || "All";
   const query = params.q?.trim() ?? "";
   const apps = await listApps({ query, category });
+  const demos = WORKSPACE_DEMOS.filter((app) => {
+    const categoryOk = category === "All" || app.category.toLowerCase().includes(category.toLowerCase());
+    const haystack = `${app.title} ${app.description} ${app.category}`.toLowerCase();
+    return categoryOk && (!query || haystack.includes(query.toLowerCase()));
+  });
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-16 pt-8">
@@ -59,12 +76,15 @@ export default async function MarketplaceAppsPage({
         </form>
       </header>
 
-      {apps.length === 0 ? (
+      {demos.length === 0 && apps.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">
           No apps yet. Once Supabase has data, they’ll render here automatically.
         </div>
       ) : (
         <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {demos.map((app) => (
+            <MarketplaceAppCard key={app.href} {...app} />
+          ))}
           {apps.map((app) => (
             <MarketplaceAppCard
               key={app.id}
