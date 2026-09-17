@@ -60,6 +60,18 @@ In the Supabase SQL editor, run these files in order:
 
 Both scripts are idempotent (`IF NOT EXISTS` / `ON CONFLICT`).
 
+### Provider filters (Grok, Claude, OpenAI)
+
+`/apps` chips now include **Grok**, **Claude**, and **OpenAI** in front of the workflow categories. Provider chips match the provider name in `apps.tags`; category chips match `apps.category` exactly (the old **Sales** chip is now **Sales Ops**, which is what the seed stores).
+
+After pulling this change, re-run the seed so the new listings appear:
+
+```bash
+supabase db query -f supabase/seed.sql
+```
+
+Or paste [`supabase/seed.sql`](supabase/seed.sql) into the Supabase SQL editor. Existing rows upsert in place.
+
 CLI equivalent if you use the Supabase CLI and are linked to a project:
 
 ```bash

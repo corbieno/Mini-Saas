@@ -27,7 +27,7 @@ Indexes on `apps.slug`, `apps.status`, `apps.category`, `installs.status`, `payo
 - New auth users get a `creators` row via `handle_new_user`.
 
 ## API Surface
-- `GET /api/apps` – list + filters (`q`, `category`, `featured`, `status`)
+- `GET /api/apps` – list + filters (`q`, `category`, `featured`, `status`). `category` accepts workflow values (`Sales Ops`, `Marketing`, …) and provider chips (`Grok`, `Claude`, `OpenAI`); providers match `apps.tags`.
 - `POST /api/apps` – create a listing (signed-in creator)
 - `GET /api/creator/metrics` – dashboard stats via `creator_metrics()` RPC plus apps/installs/payouts
 - `GET /api/creator/onboarding` – current creator + live Stripe account sync

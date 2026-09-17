@@ -7,41 +7,74 @@ import { MarketplaceAppCard } from "@/components/marketplace/app-card";
 
 const featuredApps = [
   {
-    title: "Pipeline Pulse",
-    description: "Turns CRM noise into prioritized revenue plays—auto syncs back to HubSpot & Salesforce.",
-    category: "Sales Ops",
-    creator: "Summit Automations",
-    price: "$29/mo",
-    href: "/apps/corbin-email-guru",
-    tags: ["Lead Scoring", "CRM", "Slack Alerts"],
+    title: "Grok Desk Runner",
+    description: "Desktop agent that watches a folder, reasons with Grok, and clicks through local apps for you.",
+    category: "Operations",
+    creator: "Nightshift Agents",
+    price: "$39/mo",
+    href: "/apps/grok-desk-runner",
+    tags: ["Grok", "Desktop", "Agents"],
   },
   {
-    title: "Inbox Relay",
-    description: "AI concierge that triages founder inboxes, drafts replies, and books meetings automatically.",
+    title: "Claude Research Desk",
+    description: "Long-context literature review — drop PDFs, get cited briefs you can hand to a client.",
+    category: "Operations",
+    creator: "Hearth Context",
+    price: "$39/mo",
+    href: "/apps/claude-research-desk",
+    tags: ["Claude", "Research", "PDF"],
+  },
+  {
+    title: "Assistants Switchboard",
+    description: "Route customer intents to the right OpenAI Assistant with shared memory across threads.",
     category: "Inbox",
-    creator: "Analog Futures",
-    price: "$19/mo",
-    href: "/apps/corbin-email-guru",
-    tags: ["Gmail", "Outlook"],
-  },
-  {
-    title: "Finance Sitter",
-    description: "Daily cash intel + anomaly detection for small biz owners. Connects to Stripe, Mercury, QuickBooks.",
-    category: "Finance",
-    creator: "Northwind Studio",
-    price: "$49/mo",
-    href: "/apps/corbin-email-guru",
-    tags: ["Forecasting", "Alerts"],
+    creator: "Prompt Foundry",
+    price: "$32/mo",
+    href: "/apps/assistants-switchboard",
+    tags: ["OpenAI", "Assistants", "Support"],
   },
 ];
 
 const categories = [
-  { name: "Email + Inbox", description: "Personalized outreach, account monitoring, and triage bots.", icon: "✉️" },
-  { name: "Meeting Intelligence", description: "Summaries, action items, and CRM pushes in under 60 seconds.", icon: "🎙️" },
-  { name: "Scheduling", description: "Agents that coordinate complex logistics across tools.", icon: "📅" },
-  { name: "Finance & Ops", description: "Cash visibility, payables automation, KPI snapshots.", icon: "💸" },
-  { name: "Task Automation", description: "Trigger-based workflows for repetitive ops work.", icon: "⚙️" },
-  { name: "CRM + GTM", description: "Lead research, follow-ups, and pipeline reinforcement.", icon: "📈" },
+  {
+    name: "Grok",
+    description: "Desktop agents and live-web automations built on Grok.",
+    icon: "⚡",
+    highlight: "xAI",
+    href: "/apps?category=Grok",
+  },
+  {
+    name: "Claude",
+    description: "Research, writing, and code assistants with long-context Claude.",
+    icon: "🪶",
+    highlight: "Anthropic",
+    href: "/apps?category=Claude",
+  },
+  {
+    name: "OpenAI",
+    description: "GPTs, Assistants, and API workflows for everyday teams.",
+    icon: "◎",
+    highlight: "GPT & Assistants",
+    href: "/apps?category=OpenAI",
+  },
+  {
+    name: "Email + Inbox",
+    description: "Personalized outreach, account monitoring, and triage bots.",
+    icon: "✉️",
+    href: "/apps?category=Inbox",
+  },
+  {
+    name: "Finance & Ops",
+    description: "Cash visibility, payables automation, KPI snapshots.",
+    icon: "💸",
+    href: "/apps?category=Finance",
+  },
+  {
+    name: "CRM + GTM",
+    description: "Lead research, follow-ups, and pipeline reinforcement.",
+    icon: "📈",
+    href: "/apps?category=Sales Ops",
+  },
 ];
 
 const valueProps = [
@@ -71,21 +104,25 @@ export default function MarketingPage() {
   return (
     <main className="space-y-16 pb-16">
       <LandingHero
-        tagline="Mini SaaS • micro automations with revenue on day one"
+        tagline="Mini SaaS • Grok, Claude, and OpenAI micro-SaaS"
         title="The marketplace for shippable Mini SaaS products"
-        description="Mini SaaS lets you launch automations, prompt tools, and agentic workflows that everyday teams can buy in minutes."
+        description="Launch automations, prompt tools, and agentic workflows on Grok, Claude, and OpenAI that everyday teams can buy in minutes."
         primaryCta={{ label: "Browse Mini SaaS", href: "/apps" }}
         secondaryCta={{ label: "List on Mini SaaS", href: "/dashboard" }}
         stats={[
           { label: "Apps live", value: "120+" },
           { label: "Avg. creator payout", value: "$2.6k/mo" },
-          { label: "Integrations", value: "40+" },
+          { label: "Ecosystems", value: "Grok · Claude · OpenAI" },
         ]}
       />
 
-      <CategoryGrid title="Launch with the highest-demand categories" caption="Start here" items={categories} />
+      <CategoryGrid
+        title="Discover Grok, Claude, and OpenAI — then the workflows they power"
+        caption="Start here"
+        items={categories}
+      />
 
-      <section className="mx-auto w-full max-w-6xl space-y-6">
+      <section className="mx-auto w-full max-w-6xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-slate-500">Featured</p>

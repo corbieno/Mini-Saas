@@ -79,4 +79,16 @@ export const APP_CATEGORIES = [
   "Inbox",
 ] as const;
 
-export const MARKETPLACE_FILTERS = ["All", "Sales", "Marketing", "Operations", "Finance", "Inbox"] as const;
+/** First-class model ecosystems. Provider chips match this name in `apps.tags`. */
+export const MARKETPLACE_PROVIDERS = ["Grok", "Claude", "OpenAI"] as const;
+
+/**
+ * Browse chips on `/apps`. Provider names come first so Grok / Claude / OpenAI
+ * are first-class discovery, then workflow categories that match seed `category`
+ * values exactly (including "Sales Ops" — not the old "Sales" chip).
+ */
+export const MARKETPLACE_FILTERS = ["All", ...MARKETPLACE_PROVIDERS, ...APP_CATEGORIES] as const;
+
+export function isMarketplaceProvider(value: string): value is (typeof MARKETPLACE_PROVIDERS)[number] {
+  return (MARKETPLACE_PROVIDERS as readonly string[]).includes(value);
+}

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAppBySlug, listApps } from "@/lib/data/apps";
 import { formatAppPrice } from "@/lib/format";
+import { isMarketplaceProvider } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,10 @@ export default async function MarketplaceAppDetailPage({
     notFound();
   }
 
-  const related = (await listApps({ category: app.category.split(" ")[0] })).filter((item) => item.id !== app.id).slice(0, 3);
+  const providerTag = app.tags.find((tag) => isMarketplaceProvider(tag));
+  const related = (await listApps({ category: providerTag ?? app.category }))
+    .filter((item) => item.id !== app.id)
+    .slice(0, 3);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-16 pt-8">
