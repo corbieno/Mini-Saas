@@ -26,7 +26,9 @@ export default async function MarketplaceAppsPage({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-semibold text-slate-900">Explore apps</h1>
-            <p className="text-sm text-slate-600">Discover vetted AI automations ready for everyday workflows.</p>
+            <p className="text-sm text-slate-600">
+              Discover Grok, Claude, and OpenAI micro-SaaS — plus vetted workflow categories.
+            </p>
           </div>
           <Button size="lg" asChild>
             <Link href="/onboarding">Submit your app</Link>
@@ -34,7 +36,12 @@ export default async function MarketplaceAppsPage({
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {MARKETPLACE_FILTERS.map((filter) => {
-            const href = filter === "All" ? "/apps" : `/apps?category=${encodeURIComponent(filter)}${query ? `&q=${encodeURIComponent(query)}` : ""}`;
+            const href =
+              filter === "All"
+                ? query
+                  ? `/apps?q=${encodeURIComponent(query)}`
+                  : "/apps"
+                : `/apps?category=${encodeURIComponent(filter)}${query ? `&q=${encodeURIComponent(query)}` : ""}`;
             const active = category === filter || (filter === "All" && !params.category);
             return (
               <Link key={filter} href={href}>

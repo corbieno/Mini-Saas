@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { PUBLIC_APP_STATUSES, type MarketplaceApp } from "@/lib/types";
+import { isMarketplaceProvider, PUBLIC_APP_STATUSES, type MarketplaceApp } from "@/lib/types";
 
 type CreatorJoin = { workspace_name: string } | { workspace_name: string }[] | null;
 
@@ -36,6 +36,25 @@ const APP_SELECT = `
   creator_id,
   creators ( workspace_name )
 `;
+
+/** Strip characters that break PostgREST `or=` comma syntax. */
+function sanitizeSearchTerm(value: string) {
+  return value.replace(/[,()]/g, " ").replace(/%/g, "").trim();
+}
+
+function marketplaceSearchOrFilter(rawQuery: string) {
+  const search = sanitizeSearchTerm(rawQuery);
+  if (!search) {
+    return null;
+  }
+  const quotedTag = `"${search.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+  return [
+    `title.ilike.%${search}%`,
+    `summary.ilike.%${search}%`,
+    `category.ilike.%${search}%`,
+    `tags.cs.{${quotedTag}}`,
+  ].join(",");
+}
 
 function creatorName(creators: CreatorJoin) {
   if (!creators) {
@@ -90,12 +109,19 @@ export async function listApps(filters: ListAppsFilters = {}): Promise<Marketpla
 
   const category = filters.category?.trim();
   if (category && category !== "All") {
-    query = query.ilike("category", `%${category}%`);
+    if (isMarketplaceProvider(category)) {
+      query = query.contains("tags", [category]);
+    } else {
+      query = query.eq("category", category);
+    }
   }
 
   const search = filters.query?.trim();
   if (search) {
-    query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,category.ilike.%${search}%`);
+    const clause = marketplaceSearchOrFilter(search);
+    if (clause) {
+      query = query.or(clause);
+    }
   }
 
   if (filters.featured) {
