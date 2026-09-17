@@ -49,7 +49,7 @@ export function LandingHero({
             <Link href={primaryCta.href}>{primaryCta.label}</Link>
           </Button>
           {secondaryCta ? (
-            <Button size="lg" variant={secondaryCta.variant ?? "outline"} asChild>
+            <Button size="lg" variant={secondaryCta.variant ?? "outline"} className="text-foreground" asChild>
               <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
             </Button>
           ) : null}
