@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { MarketplaceAppCard } from "@/components/marketplace/app-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CollaborationCredit } from "@/components/marketplace/collaboration-credit";
 import { getAppBySlug, listApps } from "@/lib/data/apps";
-import { formatAppPrice } from "@/lib/format";
+import { collaboratorNamesByApp } from "@/lib/data/collaborations";
+import { formatAppPrice, formatCollaboratorNames } from "@/lib/format";
 import { isMarketplaceProvider } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,7 @@ export default async function MarketplaceAppDetailPage({
   const related = (await listApps({ category: providerTag ?? app.category }))
     .filter((item) => item.id !== app.id)
     .slice(0, 3);
+  const collaborators = await collaboratorNamesByApp([app.id, ...related.map((item) => item.id)]);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-16 pt-8">
@@ -33,6 +36,7 @@ export default async function MarketplaceAppDetailPage({
         <h1 className="text-4xl font-semibold text-slate-900">{app.title}</h1>
         <p className="text-lg text-slate-600">{app.summary}</p>
         <p className="text-sm text-slate-500">{app.creator_name ?? "Independent creator"}</p>
+        <CollaborationCredit names={collaborators.get(app.id) ?? []} />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-6">
@@ -71,6 +75,7 @@ export default async function MarketplaceAppDetailPage({
                 price={formatAppPrice(item.price, item.pricing_model)}
                 href={`/apps/${item.slug}`}
                 tags={item.tags}
+                collaborationWith={formatCollaboratorNames(collaborators.get(item.id) ?? [])}
               />
             ))}
           </div>

@@ -4,6 +4,7 @@ import { StatCard } from "@/components/creator/stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { listCreatorApps } from "@/lib/data/apps";
+import { collaboratorNamesByApp, loadCollaborationOverview } from "@/lib/data/collaborations";
 import {
   ensureCreatorForUser,
   getAuthUser,
@@ -14,7 +15,7 @@ import {
   listCreatorPayouts,
   refreshCreatorStripeStatus,
 } from "@/lib/data/creators";
-import { formatAppPrice, formatDateLabel, formatUsd } from "@/lib/format";
+import { formatAppPrice, formatCollaboratorNames, formatDateLabel, formatUsd } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,8 @@ export default async function CreatorDashboardPage() {
   const creator = loaded ? await refreshCreatorStripeStatus(loaded) : null;
   const metrics = await getCreatorMetrics();
   const apps = creator ? await listCreatorApps(creator.id) : [];
+  const collaborations = creator ? await loadCollaborationOverview(creator.id) : null;
+  const collaboratorNames = await collaboratorNamesByApp(apps.map((app) => app.id));
   const installs = creator ? await listCreatorInstalls(creator.id) : [];
   const payouts = creator ? await listCreatorPayouts(creator.id) : [];
   const nextPayout = metrics.next_payout ?? payouts[0] ?? null;
@@ -50,6 +53,9 @@ export default async function CreatorDashboardPage() {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" asChild>
+            <Link href="/dashboard/collaborations">Collaborations</Link>
+          </Button>
+          <Button variant="outline" asChild>
             <Link href={profileHref}>View marketplace profile</Link>
           </Button>
           <CreateAppDialog />
@@ -64,6 +70,32 @@ export default async function CreatorDashboardPage() {
           </Link>
         </div>
       ) : null}
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Collaborations</h2>
+            <p className="text-sm text-slate-600">
+              {collaborations?.ok
+                ? collaborations.data.settings.suggestions_enabled
+                  ? "You are opted in. A request stays private until the other creator accepts."
+                  : "You are opted out, so other creators cannot send you requests."
+                : (collaborations?.error ?? "Sign in to see collaboration suggestions.")}
+            </p>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/collaborations">Review suggestions</Link>
+          </Button>
+        </div>
+        {collaborations?.ok ? (
+          <div className="mt-4 grid gap-4 sm:grid-cols-4">
+            <StatCard label="Suggestions" value={String(collaborations.data.suggestions.length)} />
+            <StatCard label="Incoming" value={String(collaborations.data.incoming.length)} />
+            <StatCard label="Outgoing" value={String(collaborations.data.outgoing.length)} />
+            <StatCard label="Active" value={String(collaborations.data.active.length)} />
+          </div>
+        ) : null}
+      </section>
 
       <section className="grid gap-4 md:grid-cols-3">
         {stats.map((stat) => (
@@ -132,7 +164,9 @@ export default async function CreatorDashboardPage() {
                 You have not listed an app yet. Publish one to appear on the marketplace.
               </div>
             ) : (
-              apps.map((app) => (
+              apps.map((app) => {
+                const collaborationWith = formatCollaboratorNames(collaboratorNames.get(app.id) ?? []);
+                return (
                 <div
                   key={app.id}
                   className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 p-3"
@@ -142,12 +176,16 @@ export default async function CreatorDashboardPage() {
                     <p className="text-xs text-slate-500">
                       {app.category} · {app.status} · {formatAppPrice(app.price, app.pricing_model)}
                     </p>
+                    {collaborationWith ? (
+                      <p className="text-xs font-medium text-slate-700">Built in collaboration with {collaborationWith}</p>
+                    ) : null}
                   </div>
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`/apps/${app.slug}`}>View</Link>
                   </Button>
                 </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>

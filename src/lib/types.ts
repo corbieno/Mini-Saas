@@ -92,3 +92,70 @@ export const MARKETPLACE_FILTERS = ["All", ...MARKETPLACE_PROVIDERS, ...APP_CATE
 export function isMarketplaceProvider(value: string): value is (typeof MARKETPLACE_PROVIDERS)[number] {
   return (MARKETPLACE_PROVIDERS as readonly string[]).includes(value);
 }
+
+export type CollaborationStatus = "pending" | "accepted" | "declined" | "withdrawn" | "ended";
+
+export type CollaborationAction = "accept" | "decline" | "withdraw" | "end";
+
+export type CollaborationSettings = {
+  creator_id: string;
+  suggestions_enabled: boolean;
+};
+
+export type CollaborationSuggestion = {
+  requester_app_id: string;
+  requester_app_title: string;
+  requester_app_slug: string;
+  recipient_app_id: string;
+  recipient_app_title: string;
+  recipient_app_slug: string;
+  recipient_creator_id: string;
+  recipient_name: string;
+  score: number;
+  reasons: string[];
+};
+
+export type CollaborationRequestView = {
+  id: string;
+  status: CollaborationStatus;
+  message: string | null;
+  created_at: string;
+  responded_at: string | null;
+  ended_at: string | null;
+  requester_creator_id: string;
+  recipient_creator_id: string;
+  requester_app_id: string;
+  recipient_app_id: string;
+  requester_app_title: string;
+  recipient_app_title: string;
+  requester_name: string;
+  recipient_name: string;
+  requester_app_slug: string | null;
+  recipient_app_slug: string | null;
+};
+
+export type ActiveCollaboration = CollaborationRequestView & {
+  partner_name: string;
+  partner_email: string | null;
+  your_app_title: string;
+  their_app_title: string;
+  your_app_slug: string | null;
+  their_app_slug: string | null;
+};
+
+export type CollaborationOverview = {
+  creator_id: string;
+  settings: CollaborationSettings;
+  suggestions: CollaborationSuggestion[];
+  incoming: CollaborationRequestView[];
+  outgoing: CollaborationRequestView[];
+  active: ActiveCollaboration[];
+  past: CollaborationRequestView[];
+};
+
+export type CollaborationCredit = {
+  app_id: string;
+  collaboration_request_id: string;
+  partner_creator_id: string;
+  partner_name: string;
+};

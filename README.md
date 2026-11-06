@@ -55,8 +55,10 @@ Notes:
 
 In the Supabase SQL editor, run these files in order:
 
-1. [`supabase/schema.sql`](supabase/schema.sql) — tables, indexes, RLS, signup trigger, `creator_metrics()` RPC
+1. [`supabase/schema.sql`](supabase/schema.sql) — tables, indexes, RLS, signup trigger, `creator_metrics()` RPC, collaboration tables
 2. [`supabase/seed.sql`](supabase/seed.sql) — sample creators, apps, installs, and payouts
+
+If the project already has the base schema, apply [`supabase/migrations/20261106151749_creator_collaborations.sql`](supabase/migrations/20261106151749_creator_collaborations.sql) instead of re-running the whole schema. Collaboration suggestions are off until a creator opts in.
 
 Both scripts are idempotent (`IF NOT EXISTS` / `ON CONFLICT`).
 
@@ -120,6 +122,10 @@ stripe trigger account.updated
 | `GET` | `/api/creator/onboarding` | creator | Profile + Stripe sync |
 | `POST` | `/api/creator/onboarding` | creator | Save profile; create Express Account Link |
 | `POST` | `/api/stripe/webhook` | Stripe signature | Record events; update Connect status |
+| `GET` | `/api/creator/collaborations` | creator | Suggestions, requests, active collaborations |
+| `POST` | `/api/creator/collaborations` | creator | Request collaboration on a similar listing |
+| `PATCH` | `/api/creator/collaborations/settings` | creator | Opt in or opt out of suggestions |
+| `POST` | `/api/creator/collaborations/:id` | creator | Accept, decline, withdraw, or end |
 
 See [`docs/data-model.md`](docs/data-model.md) for tables, RLS, and relationships.
 
@@ -131,6 +137,7 @@ See [`docs/data-model.md`](docs/data-model.md) for tables, RLS, and relationship
 | `npm run build` | Production build |
 | `npm run start` | Run the built app |
 | `npm run lint` | ESLint (flat config) |
+| `npm test` | Collaboration similarity unit tests |
 
 ## Structure Highlights
 
@@ -148,6 +155,8 @@ src/app/
   api/creator/onboarding/route.ts
   api/creator/metrics/route.ts
   api/stripe/webhook/route.ts
+  api/creator/collaborations/route.ts
+  (creator)/dashboard/collaborations/page.tsx
 src/proxy.ts                       # Session refresh + protected creator routes
 supabase/schema.sql
 supabase/seed.sql
@@ -155,4 +164,4 @@ supabase/seed.sql
 
 ## Out of scope (this MVP)
 
-Admin approval queue, featured-placement admin UI, app-manifest deploy hooks, production Vercel setup, and live paid checkout for buyers. Connect onboarding + webhook plumbing is in place so checkout can be added later.
+Admin approval queue, featured-placement admin UI, app-manifest deploy hooks, production Vercel setup, and live paid checkout for buyers. Connect onboarding + webhook plumbing is in place so checkout can be added later. Accepted collaborations do not split Stripe payouts; revenue sharing is left as a follow-up.

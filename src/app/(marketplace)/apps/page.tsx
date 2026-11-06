@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { listApps } from "@/lib/data/apps";
+import { collaboratorNamesByApp } from "@/lib/data/collaborations";
 import { MarketplaceAppCard } from "@/components/marketplace/app-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatAppPrice } from "@/lib/format";
+import { formatAppPrice, formatCollaboratorNames } from "@/lib/format";
 import { MARKETPLACE_FILTERS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function MarketplaceAppsPage({
   const category = params.category || "All";
   const query = params.q?.trim() ?? "";
   const apps = await listApps({ query, category });
+  const collaborators = await collaboratorNamesByApp(apps.map((app) => app.id));
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-16 pt-8">
@@ -82,6 +84,7 @@ export default async function MarketplaceAppsPage({
               price={formatAppPrice(app.price, app.pricing_model)}
               href={`/apps/${app.slug}`}
               tags={app.tags}
+              collaborationWith={formatCollaboratorNames(collaborators.get(app.id) ?? [])}
             />
           ))}
         </section>

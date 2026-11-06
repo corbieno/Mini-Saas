@@ -37,6 +37,20 @@ export function slugify(value: string) {
     .slice(0, 60);
 }
 
+export function formatCollaboratorNames(names: string[]) {
+  const unique = [...new Set(names.map((name) => name.trim()).filter(Boolean))];
+  if (unique.length === 0) {
+    return "";
+  }
+  if (unique.length === 1) {
+    return unique[0];
+  }
+  if (unique.length === 2) {
+    return `${unique[0]} and ${unique[1]}`;
+  }
+  return `${unique.slice(0, -1).join(", ")}, and ${unique[unique.length - 1]}`;
+}
+
 export function formatDateLabel(value: string | Date | null | undefined) {
   if (!value) {
     return "—";

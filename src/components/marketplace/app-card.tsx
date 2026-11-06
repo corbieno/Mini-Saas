@@ -11,9 +11,19 @@ export interface MarketplaceAppCardProps {
   price: string;
   href: string;
   tags?: string[];
+  collaborationWith?: string;
 }
 
-export function MarketplaceAppCard({ title, description, category, creator, price, href, tags = [] }: MarketplaceAppCardProps) {
+export function MarketplaceAppCard({
+  title,
+  description,
+  category,
+  creator,
+  price,
+  href,
+  tags = [],
+  collaborationWith,
+}: MarketplaceAppCardProps) {
   return (
     <Card className="flex h-full flex-col border-slate-200">
       <CardHeader>
@@ -23,6 +33,9 @@ export function MarketplaceAppCard({ title, description, category, creator, pric
         </div>
         <CardTitle className="text-xl font-semibold text-slate-900">{title}</CardTitle>
         <p className="text-sm text-slate-600">{description}</p>
+        {collaborationWith ? (
+          <p className="text-xs font-medium text-slate-700">Built in collaboration with {collaborationWith}</p>
+        ) : null}
       </CardHeader>
       <CardContent className="mt-auto space-y-4">
         {tags.length > 0 ? (
