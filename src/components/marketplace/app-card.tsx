@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ListingImage } from "@/components/marketplace/listing-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface MarketplaceAppCardProps {
   title: string;
@@ -11,11 +13,33 @@ export interface MarketplaceAppCardProps {
   price: string;
   href: string;
   tags?: string[];
+  imageUrl?: string | null;
+  showImage?: boolean;
 }
 
-export function MarketplaceAppCard({ title, description, category, creator, price, href, tags = [] }: MarketplaceAppCardProps) {
+export function MarketplaceAppCard({
+  title,
+  description,
+  category,
+  creator,
+  price,
+  href,
+  tags = [],
+  imageUrl = null,
+  showImage = false,
+}: MarketplaceAppCardProps) {
+  const showFrame = showImage || Boolean(imageUrl);
   return (
-    <Card className="flex h-full flex-col border-slate-200">
+    <Card className={cn("flex h-full flex-col border-slate-200", showFrame && "pt-0")}>
+      {showFrame ? (
+        <div className="relative aspect-[16/10] border-b border-slate-200">
+          <ListingImage
+            src={imageUrl}
+            alt={imageUrl ? `${title} cover` : ""}
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          />
+        </div>
+      ) : null}
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="outline">{category}</Badge>

@@ -17,6 +17,9 @@ export type MarketplaceApp = {
   tags: string[];
   creator_id: string | null;
   creator_name: string | null;
+  cover_image_path: string | null;
+  cover_image_url: string | null;
+  gallery_images: { path: string; url: string | null }[];
 };
 
 export type Creator = {

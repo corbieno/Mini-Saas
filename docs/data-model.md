@@ -3,7 +3,7 @@
 | Table | Purpose | Key columns |
 | --- | --- | --- |
 | `creators` | Registered sellers | `id`, `user_id` (→ `auth.users`), `workspace_name`, `contact_email`, `status`, `country`, `stripe_account_id`, `charges_enabled`, `payouts_enabled`, `details_submitted`, `created_at` |
-| `apps` | Marketplace listings | `id`, `creator_id`, `title`, `slug`, `category`, `summary`, `description`, `pricing_model`, `price`, `status`, `featured`, `tags`, `created_at` |
+| `apps` | Marketplace listings | `id`, `creator_id`, `title`, `slug`, `category`, `summary`, `description`, `pricing_model`, `price`, `status`, `featured`, `tags`, `cover_image_path`, `gallery_image_paths`, `created_at` |
 | `installs` | Buyer subscriptions/install events | `id`, `app_id`, `buyer_company`, `buyer_email`, `plan`, `status`, `renewal_date` |
 | `payouts` | Ledger of creator payouts | `id`, `creator_id`, `amount`, `currency`, `payout_date`, `stripe_transfer_id` |
 | `webhook_events` | Stripe webhook log (idempotent by Stripe event id) | `id` (Stripe event id), `event_type`, `payload`, `processed` |
@@ -11,6 +11,8 @@
 Creator `status` values: `pending` (no Connect account), `onboarding` (Account Link in progress), `active` (charges enabled), `approved` (seed/demo storefronts).
 
 App `status` values: `draft` (creator-only), `approved` / `published` (public marketplace).
+
+`cover_image_path` and `gallery_image_paths` store object paths in the private `listing-images` bucket (not public URLs). Both are empty for older listings. `description` is plain text, so it does not contain inline images. Gallery length is at most 5.
 
 ## Relationships
 - `auth.users.id` → `creators.user_id`
@@ -29,6 +31,9 @@ Indexes on `apps.slug`, `apps.status`, `apps.category`, `installs.status`, `payo
 ## API Surface
 - `GET /api/apps` – list + filters (`q`, `category`, `featured`, `status`). `category` accepts workflow values (`Sales Ops`, `Marketing`, …) and provider chips (`Grok`, `Claude`, `OpenAI`); providers match `apps.tags`.
 - `POST /api/apps` – create a listing (signed-in creator)
+- `PATCH /api/apps/:id` – update that creator's listing text and, when sent, image paths
+- `POST /api/apps/:id/images` – upload one PNG, JPEG, WEBP, or GIF up to 5 MB
+- `DELETE /api/apps/:id/images` – delete an upload that is not currently saved on the listing
 - `GET /api/creator/metrics` – dashboard stats via `creator_metrics()` RPC plus apps/installs/payouts
 - `GET /api/creator/onboarding` – current creator + live Stripe account sync
 - `POST /api/creator/onboarding` – save studio details and/or create a Stripe Connect Express Account Link

@@ -81,6 +81,8 @@ export default async function MarketplaceAppsPage({
               creator={app.creator_name ?? ""}
               price={formatAppPrice(app.price, app.pricing_model)}
               href={`/apps/${app.slug}`}
+              imageUrl={app.cover_image_url}
+              showImage
               tags={app.tags}
             />
           ))}
