@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { listApps } from "@/lib/data/apps";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { ensureCreatorForUser, getAuthUser } from "@/lib/data/creators";
-import { slugify } from "@/lib/format";
+import { readListingWrite } from "@/lib/listing-images";
 import { PUBLIC_APP_STATUSES } from "@/lib/types";
 
 export async function GET(request: Request) {
@@ -43,21 +43,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const title = typeof body.title === "string" ? body.title.trim() : "";
-  const category = typeof body.category === "string" ? body.category.trim() : "";
-  const summary = typeof body.summary === "string" ? body.summary.trim() : "";
-  const description = typeof body.description === "string" ? body.description.trim() : "";
-  const pricingModel = typeof body.pricing_model === "string" ? body.pricing_model : "subscription";
-  const requestedSlug = typeof body.slug === "string" ? slugify(body.slug) : slugify(title);
-  const priceValue = body.price == null || body.price === "" ? null : Number(body.price);
-
-  if (!title || !category || !requestedSlug) {
-    return NextResponse.json({ error: "Title, category, and slug are required" }, { status: 400 });
+  const parsed = readListingWrite(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  if (priceValue != null && Number.isNaN(priceValue)) {
-    return NextResponse.json({ error: "Price must be a number" }, { status: 400 });
-  }
+  const { title, slug, category, summary, description, pricingModel, price } = parsed.value;
 
   const requestedStatus = typeof body.status === "string" ? body.status : "draft";
   const status = PUBLIC_APP_STATUSES.includes(requestedStatus as (typeof PUBLIC_APP_STATUSES)[number])
@@ -69,12 +60,12 @@ export async function POST(request: Request) {
     .insert({
       creator_id: creator.id,
       title,
-      slug: requestedSlug,
+      slug,
       category,
-      summary: summary || null,
-      description: description || null,
+      summary,
+      description,
       pricing_model: pricingModel,
-      price: priceValue,
+      price,
       currency: "usd",
       status,
       featured: false,

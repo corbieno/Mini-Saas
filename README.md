@@ -81,6 +81,31 @@ supabase db query -f supabase/seed.sql
 
 Seed creators are storefront-only (no `auth.users` row). Signing up in the app creates a separate creator profile via the `handle_new_user` trigger.
 
+## Listing images
+
+Creators add one cover and up to five gallery images from **Upload new app** or **Edit** on the dashboard. Buyers see the cover on marketplace cards and the gallery on the listing page. Listings with no images keep working and show a placeholder.
+
+`apps.description` is plain text, so images are not embedded in the description. Paths are saved on `cover_image_path` and `gallery_image_paths`. Files live in the private Storage bucket `listing-images`. The site signs those objects for `next/image` (one hour).
+
+A new database gets the columns, bucket, and policies from [`supabase/schema.sql`](supabase/schema.sql). If the project already has the schema, run this file in the Supabase SQL editor instead (it is safe to re-run):
+
+[`supabase/migrations/20261110153000_listing_images.sql`](supabase/migrations/20261110153000_listing_images.sql)
+
+That file:
+
+1. Adds the image columns. Existing rows get a null cover and an empty gallery.
+2. Creates the private `listing-images` bucket with a 5 MB limit and PNG, JPEG, WEBP, and GIF only.
+3. Lets only the listing owner upload, replace, or delete objects under `{listing-id}/{file}`.
+4. Lets anyone read objects whose listing is `approved` or `published`. Draft images stay private. Signed URLs use that read policy.
+
+The app checks type and size again before it stores a file and before it saves a new path onto the listing. `next/image` allows `https://<project>.supabase.co/storage/v1/object/sign/listing-images/**`. The production host `skpjpbhkxntmlcuzzjee.supabase.co` is included. Set `NEXT_PUBLIC_SUPABASE_URL` at build time to allow another `*.supabase.co` host.
+
+Uploads and image display need this SQL plus the Supabase env vars. The production build does not call Storage.
+
+```bash
+npm run test:listing-images
+```
+
 ## Test auth
 
 1. Start the app with env vars set: `npm run dev`

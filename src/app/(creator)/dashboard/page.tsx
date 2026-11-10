@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CreateAppDialog } from "@/components/creator/create-app-dialog";
+import { CreateAppDialog, EditAppDialog } from "@/components/creator/create-app-dialog";
 import { StatCard } from "@/components/creator/stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -143,9 +143,12 @@ export default async function CreatorDashboardPage() {
                       {app.category} · {app.status} · {formatAppPrice(app.price, app.pricing_model)}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/apps/${app.slug}`}>View</Link>
-                  </Button>
+                  <div className="flex gap-2">
+                    <EditAppDialog app={app} />
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/apps/${app.slug}`}>View</Link>
+                    </Button>
+                  </div>
                 </div>
               ))
             )}

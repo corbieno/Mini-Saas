@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MarketplaceAppCard } from "@/components/marketplace/app-card";
+import { ListingGallery } from "@/components/marketplace/listing-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAppBySlug, listApps } from "@/lib/data/apps";
@@ -45,6 +46,8 @@ export default async function MarketplaceAppDetailPage({
         </Button>
       </div>
 
+      <ListingGallery title={app.title} coverUrl={app.cover_image_url} gallery={app.gallery_images} />
+
       {app.description ? <p className="text-base leading-7 text-slate-700">{app.description}</p> : null}
 
       {app.tags.length > 0 ? (
@@ -70,6 +73,8 @@ export default async function MarketplaceAppDetailPage({
                 creator={item.creator_name ?? ""}
                 price={formatAppPrice(item.price, item.pricing_model)}
                 href={`/apps/${item.slug}`}
+                imageUrl={item.cover_image_url}
+                showImage
                 tags={item.tags}
               />
             ))}

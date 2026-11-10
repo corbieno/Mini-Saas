@@ -37,6 +37,8 @@ create table if not exists public.apps (
   status text not null default 'draft',
   featured boolean not null default false,
   tags text[] not null default '{}',
+  cover_image_path text,
+  gallery_image_paths text[] not null default '{}',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -79,6 +81,8 @@ alter table public.creators add column if not exists updated_at timestamptz not 
 alter table public.apps add column if not exists description text;
 alter table public.apps add column if not exists tags text[] not null default '{}';
 alter table public.apps add column if not exists updated_at timestamptz not null default now();
+alter table public.apps add column if not exists cover_image_path text;
+alter table public.apps add column if not exists gallery_image_paths text[] not null default '{}';
 
 do $$
 begin
@@ -316,6 +320,118 @@ create policy "Creators can delete their apps"
   on public.apps for delete
   to authenticated
   using (creator_id in (select id from public.creators where user_id = auth.uid()));
+
+-- Listing images. Same statements as
+-- supabase/migrations/20261110153000_listing_images.sql (safe to re-run).
+comment on column public.apps.cover_image_path is
+  'Object path in the listing-images bucket. Null when the listing has no cover.';
+comment on column public.apps.gallery_image_paths is
+  'Ordered object paths in the listing-images bucket. At most 5.';
+
+alter table public.apps drop constraint if exists apps_gallery_image_paths_limit;
+alter table public.apps
+  add constraint apps_gallery_image_paths_limit
+  check (cardinality(gallery_image_paths) <= 5);
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'listing-images',
+  'listing-images',
+  false,
+  5242880,
+  array['image/png', 'image/jpeg', 'image/webp', 'image/gif']
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Listing owners can read their listing images" on storage.objects;
+create policy "Listing owners can read their listing images"
+  on storage.objects for select
+  to authenticated
+  using (
+    bucket_id = 'listing-images'
+    and exists (
+      select 1
+      from public.apps
+      join public.creators on creators.id = apps.creator_id
+      where apps.id::text = (storage.foldername(name))[1]
+        and creators.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Anyone can read images for published listings" on storage.objects;
+create policy "Anyone can read images for published listings"
+  on storage.objects for select
+  to anon, authenticated
+  using (
+    bucket_id = 'listing-images'
+    and exists (
+      select 1
+      from public.apps
+      where apps.id::text = (storage.foldername(name))[1]
+        and apps.status in ('approved', 'published')
+    )
+  );
+
+drop policy if exists "Listing owners can upload listing images" on storage.objects;
+create policy "Listing owners can upload listing images"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'listing-images'
+    and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp', 'gif')
+    and exists (
+      select 1
+      from public.apps
+      join public.creators on creators.id = apps.creator_id
+      where apps.id::text = (storage.foldername(name))[1]
+        and creators.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Listing owners can update listing images" on storage.objects;
+create policy "Listing owners can update listing images"
+  on storage.objects for update
+  to authenticated
+  using (
+    bucket_id = 'listing-images'
+    and exists (
+      select 1
+      from public.apps
+      join public.creators on creators.id = apps.creator_id
+      where apps.id::text = (storage.foldername(name))[1]
+        and creators.user_id = auth.uid()
+    )
+  )
+  with check (
+    bucket_id = 'listing-images'
+    and lower(storage.extension(name)) in ('png', 'jpg', 'jpeg', 'webp', 'gif')
+    and exists (
+      select 1
+      from public.apps
+      join public.creators on creators.id = apps.creator_id
+      where apps.id::text = (storage.foldername(name))[1]
+        and creators.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Listing owners can delete listing images" on storage.objects;
+create policy "Listing owners can delete listing images"
+  on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'listing-images'
+    and exists (
+      select 1
+      from public.apps
+      join public.creators on creators.id = apps.creator_id
+      where apps.id::text = (storage.foldername(name))[1]
+        and creators.user_id = auth.uid()
+    )
+  );
 
 -- installs
 drop policy if exists "Creators can read installs for their apps" on public.installs;
