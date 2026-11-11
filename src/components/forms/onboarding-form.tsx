@@ -136,7 +136,7 @@ export function OnboardingForm({
             <Label htmlFor="country">Business country</Label>
             <select
               id="country"
-              className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm"
+              className="h-10 w-full rounded-xl border border-input bg-card px-3.5 text-sm text-foreground"
               value={country}
               onChange={(event) => setCountry(event.target.value)}
               disabled={Boolean(creator?.stripe_account_id)}

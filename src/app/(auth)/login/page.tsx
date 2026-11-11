@@ -9,7 +9,7 @@ export default async function LoginPage({
   const nextPath = params.next?.startsWith("/") ? params.next : "/dashboard";
 
   return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-slate-50 px-4 py-16">
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-16">
       <LoginForm nextPath={nextPath} initialError={params.error} />
     </main>
   );
