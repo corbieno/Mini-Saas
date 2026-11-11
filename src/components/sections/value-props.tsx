@@ -9,15 +9,15 @@ export interface ValuePropsProps {
 
 export function ValueProps({ sections }: ValuePropsProps) {
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-6 rounded-3xl bg-slate-50 p-8">
+    <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 sm:px-6">
       {sections.map((section) => (
-        <div key={section.title} className="space-y-3">
+        <div key={section.title} className="space-y-4">
           <h3 className="text-xl font-semibold text-slate-900">{section.title}</h3>
           <div className="grid gap-4 md:grid-cols-2">
             {section.items.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div key={item.title} className="rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="text-base font-medium text-slate-900">{item.title}</div>
-                <p className="text-sm text-slate-600">{item.description}</p>
+                <p className="mt-1.5 text-sm leading-6 text-slate-600">{item.description}</p>
               </div>
             ))}
           </div>

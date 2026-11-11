@@ -10,7 +10,7 @@ interface AuthCardProps {
 
 export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   return (
-    <Card className="w-full max-w-md border-slate-200 shadow-lg">
+    <Card className="w-full max-w-md border-border shadow-soft">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold text-slate-900">{title}</CardTitle>
         <p className="text-sm text-slate-600">{subtitle}</p>

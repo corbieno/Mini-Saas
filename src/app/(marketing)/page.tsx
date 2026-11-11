@@ -102,7 +102,7 @@ const howItWorks = [
 
 export default function MarketingPage() {
   return (
-    <main className="space-y-16 pb-16">
+    <main className="space-y-20 pb-24">
       <LandingHero
         tagline="Mini SaaS • Grok, Claude, and OpenAI micro-SaaS"
         title="The marketplace for shippable Mini SaaS products"
@@ -122,12 +122,10 @@ export default function MarketingPage() {
         items={categories}
       />
 
-      <section className="mx-auto w-full max-w-6xl space-y-6 px-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-slate-500">Featured</p>
-            <h2 className="text-3xl font-semibold text-slate-900">In-demand apps buyers are paying for</h2>
-          </div>
+      <section className="mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6">
+        <div className="max-w-2xl space-y-2">
+          <p className="text-sm font-medium uppercase tracking-[0.16em] text-slate-500">Featured</p>
+          <h2 className="text-3xl font-semibold text-slate-900">In-demand apps buyers are paying for</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featuredApps.map((app) => (

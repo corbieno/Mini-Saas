@@ -11,18 +11,18 @@ export interface CtaPanelProps {
 
 export function CtaPanel({ eyebrow, title, description, primaryCta, secondaryCta }: CtaPanelProps) {
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 rounded-3xl bg-slate-900 px-8 py-10 text-slate-50 shadow-2xl">
-      <div>
-        {eyebrow ? <p className="text-sm uppercase tracking-wide text-slate-300">{eyebrow}</p> : null}
-        <h2 className="text-3xl font-semibold leading-tight">{title}</h2>
-        <p className="mt-2 text-sm text-slate-200">{description}</p>
+    <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 rounded-3xl border border-border bg-gradient-to-br from-accent via-card to-secondary px-8 py-12 shadow-card sm:px-12">
+      <div className="max-w-2xl">
+        {eyebrow ? <p className="text-sm font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p> : null}
+        <h2 className="mt-2 text-3xl font-semibold leading-tight text-slate-900">{title}</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-600">{description}</p>
       </div>
       <div className="flex flex-wrap gap-3">
         <Button size="lg" asChild>
           <Link href={primaryCta.href}>{primaryCta.label}</Link>
         </Button>
         {secondaryCta ? (
-          <Button size="lg" variant="secondary" asChild>
+          <Button size="lg" variant="outline" className="bg-card" asChild>
             <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
           </Button>
         ) : null}
